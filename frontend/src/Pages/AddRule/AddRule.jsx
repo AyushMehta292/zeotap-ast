@@ -8,23 +8,23 @@ function AddRule() {
   const [rules, setRules] = useState([]); // State to store fetched rules
 
   // Function to fetch the rules from the server when the component loads
-  useEffect(() => {
-    const fetchRules = async () => {
-      try {
-        const response = await fetch('/api/get_rules');
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Assuming data is an array of objects and each object contains a 'rulesArray'
-          const extractedRules = data.flatMap(item => item.rulesArray || []); // Flatten arrays and handle empty cases
-          setRules(extractedRules); // Update state with the rule strings
-        } else {
-          console.error('Failed to fetch rules');
-        }
-      } catch (error) {
-        console.error('Error fetching rules:', error);
+  const fetchRules = async () => {
+    try {
+      const response = await fetch('https://zeotap-ast.onrender.com/get-rules');
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Assuming data is an array of objects and each object contains a 'rulesArray'
+        const extractedRules = data.flatMap(item => item.rulesArray || []); // Flatten arrays and handle empty cases
+        setRules(extractedRules); // Update state with the rule strings
+      } else {
+        console.error('Failed to fetch rules');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching rules:', error);
+    }
+  };
+  useEffect(() => {
 
     fetchRules(); // Call the fetch function when the component loads
   }, []); // Empty dependency array to run once when the component mounts
@@ -37,8 +37,8 @@ function AddRule() {
     const ruleData = { expression: ruleInput };
 
     try {
-      // Send the POST request to localhost:8080/add_rule
-      const response = await fetch('/api/add_rule', {
+      // Send the POST request to localhost:8080/add-rule
+      const response = await fetch('https://zeotap-ast.onrender.com/add-rule', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ function AddRule() {
   // Function to handle deleting a rule
   const handleDelete = async (rule) => {
     try {
-      const response = await fetch('/api/delete', {
+      const response = await fetch('https://zeotap-ast.onrender.com/delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

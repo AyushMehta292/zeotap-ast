@@ -63,17 +63,17 @@ console.log('Combined AST:', combinedAST);
 
 // Start the server
 const CheckRoutes=require('./routes/check');
-const CreateRoutes=require('./routes/add_rule');
+const CreateRoutes=require('./routes/add-rule');
 const DeleteRoutes=require('./routes/delete');
 const getRoutes=require('./routes/get');
 
 app.use('/check',CheckRoutes);
 
-app.use('/add_rule',CreateRoutes);
+app.use('/add-rule',CreateRoutes);
 
 app.use('/delete',DeleteRoutes);
 
-app.use('/get_rules',getRoutes)
+app.use('/get-rules',getRoutes)
 
 app.get('/', (req, res) => {
     res.send('Hello, World!');

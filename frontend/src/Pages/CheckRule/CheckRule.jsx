@@ -24,7 +24,7 @@ function CheckRule() {
 
     try {
       // Send POST request to localhost:8080/check
-      const response = await fetch('/api/check', {
+      const response = await fetch('https://zeotap-ast.onrender.com/check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

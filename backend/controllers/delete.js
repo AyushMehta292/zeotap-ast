@@ -56,8 +56,13 @@ const Delete=async(req,res)=>{
         
         
 
-        const combinedAST=combineASTs(conditionASTs);
-        let newCode=generator(combinedAST).code;
+        const combinedAST = combineASTs(conditionASTs);
+        if (!combinedAST) {
+            console.error("No valid conditions to combine into an AST.");
+            res.status(400).send(JSON.stringify({ error: "No valid conditions found." }));
+            return; // Exit the function early if combinedAST is null
+        }
+        let newCode = generator(combinedAST).code;
         //sending new code after deletion
         
         const netRule = await NetRule.findOneAndUpdate({}, { ruleString: newCode }, { new: true, upsert: true });
