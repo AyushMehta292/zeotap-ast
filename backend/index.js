@@ -75,7 +75,9 @@ app.use('/delete',DeleteRoutes);
 
 app.use('/get_rules',getRoutes)
 
-
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
 
 
 app.listen(8080, (error) => {
