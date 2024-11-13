@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "proxy": {
-    "/api": "http://127.0.0.1:8000"
+    "/api": "https://zeotap-ast.onrender.com"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

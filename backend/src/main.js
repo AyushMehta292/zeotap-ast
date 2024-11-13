@@ -35,14 +35,7 @@ app.use(
 );
 
 // Enable CORS with specific settings
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Authorization", "Content-Type"],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 // Body Parser: Read JSON data from request body, limit 1MB
 app.use(express.json({ limit: "1mb" }));
