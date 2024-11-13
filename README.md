@@ -1,99 +1,198 @@
-# Rule Engine with AST
+This repository contains the backend and frontend for the AST project, implementing an API for managing 
+and evaluating rules using Abstract Syntax Trees (AST). The backend is built using Node.js, Express, and MongoDB, with a React frontend for user interaction.
 
-## Objective
+---
 
-This project is a 3-tier rule engine application designed to determine user eligibility based on attributes like age, department, income, and experience. The system uses [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST) to represent conditional rules, allowing for dynamic creation, combination, and modification of these rules.
+## Table of Contents
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+  - [Backend Installation](#backend-installation)
+  - [Frontend Installation](#frontend-installation)
+- [Configuration](#configuration)
+  - [Backend Configuration](#backend-configuration)
+  - [Frontend Configuration](#frontend-configuration)
+- [Usage](#usage)
+- [Security Layer](#security-layer)
+- [Performance Considerations](#performance-considerations)
+- [API Endpoints](#api-endpoints)
+- [API Integration](#api-integration)
+- [Design Choices](#design-choices)
+- [License](#license)
 
-## Data Structure
+---
 
-The AST is represented using a Node data structure with the following fields:
-- **type**: A string indicating the node type ("operator" for AND/OR, "operand" for conditions).
-- **left**: Reference to another Node (left child).
-- **right**: Reference to another Node (right child for operators).
-- **value**: Optional value for operand nodes (e.g., number for comparisons).
+## Features
+- Create, update, delete, and fetch rules using MongoDB.
+- Evaluate rules with user-provided data.
+- Combine multiple rules into a single rule.
+- Secure API with rate limiting, XSS protection, and data sanitization.
+- CORS enabled for frontend integration.
+- Built-in middleware for error handling and request logging.
 
-## Data Storage
+---
 
-### Database Choice
+## Prerequisites
+Ensure the following are installed on your system:
+- **Node.js** (version 14.x or later)
+- **MongoDB** (running locally or accessible remotely)
+- **npm** (comes bundled with Node.js)
+- **Vite** (for running frontend)
 
-The application uses [MongoDB](https://www.mongodb.com/) for storing rules and application metadata due to its flexibility in handling JSON-like documents.
 
-### Schema
+---
 
-- **Rules Schema**: Stores individual rules as strings.
-  ```javascript
-  const RulesSchema = new mongoose.Schema({
-      rulesArray: { type: String, required: true }
-  });
-  ```
+## Installation
 
-- **NetRule Schema**: Stores the combined rule as a single string.
-  ```javascript
-  const NetRuleSchema = new mongoose.Schema({
-      ruleString: { type: String, required: true }
-  });
-  ```
-
-## Sample Rules
-
-- **Rule 1**: `((age > 30 AND department = 'Sales') OR (age < 25 AND department = 'Marketing')) AND (salary > 50000 OR experience > 5)`
-- **Rule 2**: `((age > 30 AND department = 'Marketing')) AND (salary > 20000 OR experience > 5)`
-
-## API Design
-
-1. **create_rule(rule_string)**: Parses a rule string into an AST Node object.
-   - Implemented in the backend controller `create.js` using `[@babel/parser](https://babeljs.io/docs/en/babel-parser)`.
-
-2. **combine_rules(rules)**: Combines multiple rule strings into a single AST.
-   - Implemented using the `combineASTs` function in `create.js`.
-
-3. **evaluate_rule(JSON data)**: Evaluates the combined rule's AST against provided data.
-   - Implemented in `check.js` using `evaluateAST`.
-
-## Test Cases
-
-1. **Create Individual Rules**: Use `create_rule` to parse example rules and verify their AST representation.
-2. **Combine Rules**: Use `combine_rules` to ensure the resulting AST reflects the combined logic.
-3. **Evaluate Rule**: Test `evaluate_rule` with sample JSON data for different scenarios.
-
-## Bonus Features
-
-- **Error Handling**: Implemented error handling for invalid rule strings or data formats.
-- **Attribute Validation**: Ensures attributes are part of a predefined catalog.
-- **Rule Modification**: Allows modification of existing rules using additional functionalities.
-- **User-Defined Functions**: Considered for future extension to support advanced conditions.
-
-## Setup Instructions
-
-1. **Clone the Repository**
+### Backend Installation
+1. Clone the repository and navigate to the backend directory:
    ```bash
-   git clone https://github.com/yourusername/rule-engine-ast.git
-   cd rule-engine-ast
+   git clone https://github.com/AyushMehta292/zeotap-ast.git
+   cd zeotap-ast/backend
    ```
 
-2. **Install Dependencies**
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. **Environment Configuration**
-   - Create a `.env` file and add your MongoDB URI:
-     ```plaintext
-     MONGO_URI=your_mongo_uri_here
-     ```
-
-4. **Run the Application**
+3. Update the `.env` file with the following:
+   ```
+   MONGO_URI=<your mongodb uri>
+   PORT=8000
+   ```
+4. Start the server:
    ```bash
    npm start
    ```
 
+### Frontend Installation
+1. Navigate to the frontend directory:
+   ```bash
+   cd zeotap-ast/frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. The frontend will be accessible at `http://localhost:5173`.
+
+---
+
+## Configuration
+
+### Backend Configuration
+- **MongoDB**: Ensure MongoDB is running and accessible at the configured URI.
+- **CORS**: CORS is enabled to allow requests from `http://localhost:5173`. Update the allowed origins if required.
+- **Rate Limiting**: Each IP is limited to 150 requests per hour to protect against abuse.
+
+### Frontend Configuration
+The frontend communicates with the backend via API calls. The backend should be running on `http://localhost:8000`. The `proxy` configuration in `package.json` ensures that `/api` requests are forwarded to the backend.
+
+---
+
 ## Usage
+1. Ensure the backend is running on `http://localhost:8000`.
+2. Start the backend server:
+   ```bash
+   npm start
+   ```
+3. Start the frontend development server:
+   ```bash
+   npm run dev
+   ```
+4. Open your browser and navigate to `http://localhost:5173`.
 
-- **Add Rule**: Use the `/add-rule` endpoint to add new rules.
-- **Check Rule**: Use the `/check` endpoint to evaluate rules against user data.
+---
 
-## Contact
+## Security Layer
+The backend includes:
+- **Helmet**: Sets security-related HTTP headers.
+- **XSS-Clean**: Sanitizes user input to prevent XSS attacks.
+- **Mongo-Sanitize**: Prevents NoSQL injection attacks by sanitizing input.
+- **HPP (HTTP Parameter Pollution)**: Prevents HTTP parameter pollution attacks.
+- **Rate Limiting**: Limits requests to prevent DDoS attacks.
+- **CORS**: Configures Cross-Origin Resource Sharing.
 
-For questions or feedback, please contact [ayushmehta292@gmail.com](mailto:ayushmehta292@gmail.com).
+The frontend includes:
+- **Form Validation**: `zod` schemas ensure only valid data is submitted.
+- **API Error Handling**: Managed through `axios` to prevent disruptions.
 
-        
+---
+
+## Performance Considerations
+- **Vite**: Optimized build process and fast refresh during development.
+- **Form Management**: `react-hook-form` reduces unnecessary re-renders.
+- **Memoization**: Prevents unnecessary recomputation.
+   ```javascript
+   const convertedData = useMemo(
+     () => ({
+       age: 0,
+       salary: 0,
+       experience: 0,
+       department: "",
+     }),
+     []
+   );
+   ```
+- **Callback Optimization**: Prevents unnecessary re-creation of functions.
+   ```javascript
+   const handleSelectRule = useCallback((ruleId) => {
+     setSelectedRules((prevSelected) =>
+       prevSelected.includes(ruleId)
+         ? prevSelected.filter((id) => id !== ruleId)
+         : [...prevSelected, ruleId]
+     );
+   }, []);
+   ```
+- **Body Parser Limit**: Requests are limited to a 1MB body size to prevent large payload attacks.
+- **Compression**: Use the compression middleware (optional) for improved response times.
+
+---
+
+## API Endpoints
+- **POST /api/rules**: Create a new rule.
+- **GET /api/rules/:ruleName**: Get a rule by name.
+- **GET /api/rules**: Get all rules.
+- **PUT /api/rules/:ruleId**: Update a rule by ID.
+- **DELETE /api/rules/:ruleId**: Delete a rule by ID.
+- **POST /api/rules/combine**: Combine multiple rules into one.
+- **POST /api/rules/evaluate/:ruleId**: Evaluate a rule with data.
+
+---
+
+## API Integration
+Frontend API interactions:
+- **Create Rule**:
+   ```javascript
+   RuleService.createRule("Sample Rule", "age > 18");
+   ```
+- **Evaluate Rule**:
+   ```javascript
+   RuleService.evaluateRule(ruleId, { age: 25, department: "IT" });
+   ```
+- **Combine Rules**:
+   ```javascript
+   RuleService.combineRules([ruleId1, ruleId2]);
+   ```
+
+---
+
+## Design Choices
+1. **Modular Structure**: Backend code is divided into controllers, routes, and models.
+2. **AST for Rule Engine**: Efficient rule evaluation using Abstract Syntax Trees.
+3. **Mongoose ODM**: Simplifies MongoDB interactions.
+4. **Express Middleware**: Middleware is extensively used for security, logging, and error handling..
+5. **Environment Variables**: Sensitive configurations stored in `.env.sample` for security.
+6. **Utility-First Styling**: TailwindCSS simplifies frontend styling.
+
+---
+
+This README provides a comprehensive guide to setting up, running, and understanding the Zeotap AST Application. If you encounter any issues or need further assistance, feel free to reach out.
